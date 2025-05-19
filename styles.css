@@ -18,6 +18,7 @@ body {
 
 header {
     padding: 16px;
+    font-size: 35px;
 }
 
 footer {
@@ -36,7 +37,6 @@ main {
     display: flex;
     flex-wrap: wrap;
     background-color: white;
-
 }
 
 .square {
@@ -46,9 +46,12 @@ main {
 .controls {
     max-width: 40%;
     font-family: "Roboto Mono", monospace, sans-serif;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
 }
 
-.no-of-squares {
+.no-of-squares, .toggle-grid, .randomize-color, .clear-grid {
     display: flex;
     flex-wrap: wrap;
     gap: 16px;

@@ -1,8 +1,30 @@
 
 const SIDE_LENGTH = 720;
 
-function colorSquare (event) {
+function colorSquareBlack (event) {
     event.target.style["background-color"] = "black";
+}
+
+function getRandomRgbValue () {
+    return Math.floor(Math.random() * 255) + 1;
+}
+
+function colorSquareRgb (event) {
+    const color = `rgb(${getRandomRgbValue()}, ${getRandomRgbValue()}, ${getRandomRgbValue()})`
+    event.target.style["background-color"] = color;
+}
+
+function colorSquare (event) {
+    let currentOpacity = parseFloat(event.target.style.opacity) || 0;
+    if (currentOpacity < 1) {
+        currentOpacity = Math.min(currentOpacity + 0.1, 1);
+        event.target.style.opacity = currentOpacity;
+    }
+    if (randomizeState) {
+        colorSquareRgb(event);
+    } else {
+        colorSquareBlack(event);
+    }
 }
 
 function makeGridDivs (numberOfSquares) {
@@ -11,7 +33,7 @@ function makeGridDivs (numberOfSquares) {
     const totalSquares = numberOfSquares * numberOfSquares;
     for (let i = 0; i < totalSquares; i ++) {
         const square = document.createElement("div");
-        square.setAttribute("style", `width: ${squareSide}px; height: ${squareSide}px;`);
+        square.setAttribute("style", `width: ${squareSide}px; height: ${squareSide}px; opacity: 0.1;`);
         square.classList.add("square");
         grid.appendChild(square);
         square.addEventListener("mouseover", colorSquare);
@@ -27,13 +49,15 @@ function addSquares (toBeAdded, numberOfSquares) {
     squares.forEach((square) => {
         square.style["width"] = `${squareSide}px`;
         square.style["height"] = `${squareSide}px`;
-        square.style["background-color"] = "white";
+        square.style.removeProperty("background-color");
+        square.style.opacity = 0.1;
+        square.classList.toggle("square", toggleState);
     });
 
     for (let i = 0; i < toBeAdded; i++) {
         const newSquare = document.createElement("div");
-        newSquare.setAttribute("style", `width: ${squareSide}px; height: ${squareSide}px;`);
-        newSquare.classList.add("square");
+        newSquare.setAttribute("style", `width: ${squareSide}px; height: ${squareSide}px; opacity: 0.1;`);
+        newSquare.classList.toggle("square", toggleState);
         grid.appendChild(newSquare);
         newSquare.addEventListener("mouseover", colorSquare);
     }
@@ -51,7 +75,9 @@ function removeSquares (toBeRemoved, numberOfSquares) {
     squares.forEach((square) => {
         square.style["width"] = `${squareSide}px`;
         square.style["height"] = `${squareSide}px`;
-        square.style["background-color"] = "white";
+        square.style.removeProperty("background-color");
+        square.style.opacity = 0.1;
+        square.classList.toggle("square", toggleState);
     });
 }
 
@@ -84,9 +110,54 @@ function changeGridDivs () {
     numberOfSquares = requestedNumberOfSquares;
 }
 
+function toggleGrid () {
+    if (toggleState === true) {
+        toggleState = false;
+    } else {
+        toggleState = true;
+    }
+    const squares = document.querySelectorAll(".grid div");
+    squares.forEach((square) => {
+        square.classList.toggle("square");
+    });
+}
+
+
 let numberOfSquares = 16;
+let randomizeState = false;
+let toggleState = true;
 
 makeGridDivs(numberOfSquares);
 
 const squareButton = document.querySelector(".square-button");
 squareButton.addEventListener("click", changeGridDivs);
+
+
+const toggleButton = document.querySelector(".toggle-button");
+toggleButton.addEventListener("click", toggleGrid);
+
+
+const randomizeButton = document.querySelector(".randomize-button");
+randomizeButton.addEventListener("click", () => {
+    if (randomizeState === true) {
+        randomizeState = false;
+    } else {
+        randomizeState = true;
+    }
+    const randomizeButtonState = document.querySelector(".randomize-color span");
+    if (randomizeState) {
+        randomizeButtonState.textContent = "Derandomize";
+    } else {
+        randomizeButtonState.textContent = "Randomize";
+    }
+});
+
+
+const clearButton = document.querySelector(".clear-button");
+clearButton.addEventListener("click", () => {
+    const squares = document.querySelectorAll(".grid div");
+    squares.forEach((square) => {
+        square.style.removeProperty("background-color");
+        square.style.opacity = 0.1;
+    });
+});
